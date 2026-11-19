@@ -196,23 +196,22 @@ app.get('/miis/:username/:expression/:format', async (request, response) => {
 
 
 });
-app.get('/mii/:pid/:format', async (request, response) => {
+app.get('/:info', async (request, response) => {
     let render_type = 'face';
-    const pid = request.params.pid || 1408486111
+    const parameters = request.params.info;
     const width = Number(request.query.width) || 96;
-    let formatz = request.params.format || 'image.png'
     let format
     let expression = 0
     let render_type
 
     switch (true) {
-        case formatz.includes('jpeg') || formatz.includes('jpg'):
+        case parameters.includes('jpeg') || parameters.includes('jpg'):
             format = 'jpeg'
             break
-        case formatz.includes('tga'):
+        case parameters.includes('tga'):
             format = 'tga'
             break
-        case formatz.includes('png'):
+        case parameters.includes('png'):
             format = 'png'
             break
         default:
@@ -220,18 +219,15 @@ app.get('/mii/:pid/:format', async (request, response) => {
     }
     
     switch (true) {
-        case formatz.includes('body'):
+        case parameters.includes('body'):
             expression = 0
             render_type = 'whole_body'
             break
-        case formatz.includes('surprised_open_mouth'):
+        case parameters.includes('surprised_open_mouth'):
             expression = 10
             break
-        case formatz.includes('puzzled'):
+        case parameters.includes('puzzled'):
             expression = 18
-            break
-        case formatz.includes('sorrow'):
-            expression = 3
             break
         case formatz.includes('smile_open_mouth'):
             expression = 7
@@ -246,8 +242,11 @@ app.get('/mii/:pid/:format', async (request, response) => {
             expression = 18
             break
     }
-               if (pid) {
-                const miiDataz = await NnidResolver.miiFromPid(pid);
+               if (parameters) {
+                  const filename = url.pathname.split('/').pop(); 
+                  // The hash is always the first part
+                  const hash = filename.split('_')[0]; 
+                const miiDataz = await NnidResolver.miiFromhash(hash);
                 if (!miiDataz) {
                     return response.send('Server Error')
                 }
