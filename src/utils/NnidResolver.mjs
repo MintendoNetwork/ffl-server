@@ -38,12 +38,24 @@
  *
  * console.debug(await NnidUserResolver.miiFromPid(await NnidUserResolver.pidFromUserId('PN_Jon')));
  */
+import pg from 'pg';
+const { Pool } = pg;
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'your_database',
+  password: 'your_password',
+  port: 5432,
+});
+
+
 export default class NnidResolver {
   /**
    * API base for Pretendo Network.
    * Note that this blocks HTTP/2 clients, and a workaround for Bun is applied.
    */
-  static baseUrl = 'https://account.samtendo.net/v1/api';
+  static baseUrl = 'https://account.mintendo.net/v1/api';
   // account.nintendo.net would require a client certificate, however
   // its /v1/api/miis endpoint stopped working in 2024.
 
@@ -118,6 +130,23 @@ export default class NnidResolver {
       pid: NnidResolver._extractXmlTag(body, 'pid'),
       miiData: miiData,
       userId: NnidResolver._extractXmlTag(body, 'user_id')
+    });
+  }
+
+  static async miiFromhash(/** @type {string} */ hash,
+    /** @type {string} */ base = NnidResolver.baseUrl) {
+    
+    const selectRes = await pool.query(
+      'SELECT * FROM mnids WHERE mii_hash = $1',
+      [hash]
+    );
+    const user = selectRes.rows[0];
+    if (!user) { // For a non-existent user, we should instead see 404.
+      throw new Error('Mii data is unexpectedly empty in response.');
+    }
+    // NOTE: No fields except for name should ever contain XML entities.
+    return /** @type {MiiResponse} */ ({
+      miiData: user.mii_data
     });
   }
 }
