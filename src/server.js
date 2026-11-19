@@ -222,19 +222,19 @@ app.get('/:info', async (request, response) => {
             expression = 0
             render_type = 'whole_body'
             break
-        case parameters.includes('surprised_open_mouth'):
+        case parameters.includes('surprised'):
             expression = 10
             break
         case parameters.includes('puzzled'):
             expression = 3
             break
-        case parameters.includes('smile_open_mouth'):
+        case parameters.includes('happy'):
             expression = 7
             break
         case parameters.includes('normal'):
             expression = 0
             break
-        case parameters.includes('wink'):
+        case parameters.includes('like_face'):
             expression = 13
             break
         case parameters.includes('frustrated'):
