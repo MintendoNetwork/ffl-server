@@ -202,7 +202,6 @@ app.get('/:info', async (request, response) => {
     const width = Number(request.query.width) || 96;
     let format
     let expression = 0
-    let render_type
 
     switch (true) {
         case parameters.includes('jpeg') || parameters.includes('jpg'):
@@ -227,25 +226,25 @@ app.get('/:info', async (request, response) => {
             expression = 10
             break
         case parameters.includes('puzzled'):
-            expression = 18
+            expression = 3
             break
-        case formatz.includes('smile_open_mouth'):
+        case parameters.includes('smile_open_mouth'):
             expression = 7
             break
-        case formatz.includes('normal'):
+        case parameters.includes('normal'):
             expression = 0
             break
-        case formatz.includes('wink'):
+        case parameters.includes('wink'):
             expression = 13
             break
-        case formatz.includes('frustrated'):
+        case parameters.includes('frustrated'):
             expression = 18
             break
     }
                if (parameters) {
-                  const filename = url.pathname.split('/').pop(); 
-                  // The hash is always the first part
-                  const hash = filename.split('_')[0]; 
+                const filename = parameters.split('/').pop(); 
+                // The hash is always the first part
+                const hash = filename.split('_')[0];
                 const miiDataz = await NnidResolver.miiFromhash(hash);
                 if (!miiDataz) {
                     return response.send('Server Error')
